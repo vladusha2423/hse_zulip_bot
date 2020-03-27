@@ -48,9 +48,15 @@ def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
         message += str(lesson['lessonNumberStart']) + ' пара (' + \
                    lesson['beginLesson'] + '-' + lesson['endLesson'] + ')\n' + \
                    lesson['discipline'] + '\n' + \
-                   lesson['kindOfWork'] + '\n' + \
-                   lesson['auditorium'] + ' (' + lesson['building'] + ')' + '\n' + \
-                   lesson['lecturer'] + '\n\n'
+                   lesson['kindOfWork'] + '\n'
+        if datetime.datetime.strptime(lesson['date'], '%Y.%m.%d').date() < datetime.date(2020, 3, 17):
+            message += lesson['auditorium'] + ' (' + lesson['building'] + ')' + '\n'
+        else:
+            if lesson['url1']:
+                message += 'Видеочат: ' + lesson['url1'] + '\n'
+            else:
+                message += 'Видеочат: ' + 'https://meet.miem.hse.ru/' + lesson['auditorium'] + '\n'
+        message += lesson['lecturer'] + '\n\n'
     return message
 
 
