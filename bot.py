@@ -3,6 +3,7 @@ sys.path.insert(1, 'venv/lib/python3.7/site-packages')
 import zulip
 import timetable
 
+
 BOT_MAIL = "hse-bot@chat.miem.hse.ru"
 HSE_API = "https://www.hse.ru/api/timetable/lessons?"
 
@@ -97,6 +98,14 @@ class BotHandler(object):
             print(request)
             self.client.send_message(request)
 
+    def send_private_msg(self, email, content):
+        request = {
+            "type": "private",
+            "to": email,
+            "content": content
+        }
+        self.client.send_message(request)
+
     def check_msg(self, msg):
         words = msg["content"].lower().split()
         if (msg["type"] == 'private' or '@**Service Bot**' in msg["content"]) \
@@ -116,6 +125,6 @@ class BotHandler(object):
                                    "Чтобы узнать какие у меня есть команды, напиши 'Помощь'")
 
 
-Bot = BotHandler()
-Bot.client.call_on_each_message(Bot.get_msg)
-handler_class = BotHandler
+# Bot = BotHandler()
+# Bot.client.call_on_each_message(Bot.get_msg)
+# handler_class = BotHandler
