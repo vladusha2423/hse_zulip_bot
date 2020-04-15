@@ -1,4 +1,6 @@
 from __future__ import print_function
+import sys
+sys.path.insert(1, 'venv/Lib/site-packages')
 import pickle
 import os.path
 from googleapiclient.discovery import build

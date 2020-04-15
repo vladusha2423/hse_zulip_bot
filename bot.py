@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, 'venv/lib/python3.7/site-packages')
+sys.path.insert(1, 'venv/Lib/site-packages')
 import zulip
 import timetable
 
