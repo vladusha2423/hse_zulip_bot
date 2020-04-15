@@ -2,6 +2,7 @@ import ruz
 import csv
 import datetime
 import re
+import check_user
 
 DaysOfWeek = {
     'Пн': 'Понедельник',
@@ -14,15 +15,15 @@ DaysOfWeek = {
 }
 
 
-def check_csv(tid):
-    with open('teacher_id.csv', "r") as file:
-        reader = csv.reader(file)
-        for row in reader:
-            print(row)
-            for r in row:
-                if tid == int(r):
-                    return 'hse.ru'
-    return 'edu.hse.ru'
+# def check_csv(tid):
+#     with open('teacher_id.csv', "r") as file:
+#         reader = csv.reader(file)
+#         for row in reader:
+#             print(row)
+#             for r in row:
+#                 if tid == int(r):
+#                     return 'hse.ru'
+#     return 'edu.hse.ru'
 
 
 def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
@@ -32,13 +33,16 @@ def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
         else:
             response = ruz.person_lessons(other_email)
     else:
-        if date_start != '' and date_end != '':
-            response = ruz.person_lessons(email.replace('miem.hse.ru', check_csv(sender_id)), date_start, date_end)
+        checked_user = check_user.check(email)
+        if checked_user:
+            if date_start != '' and date_end != '':
+                response = ruz.person_lessons(checked_user, date_start, date_end)
+            else:
+                response = ruz.person_lessons(checked_user)
         else:
-            response = ruz.person_lessons(email.replace('miem.hse.ru', check_csv(sender_id)))
+            return 'В базе отсутствует пользователь с такой почтой('
     message = ''
     curr_date = ''
-    print('LESSSSSSONS: \n', response)
     if not response:
         return 'Запрос ничего не выдал. Тут два варианта: каникулы или лег руз :)'
     for lesson in response:
@@ -55,7 +59,7 @@ def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
             if lesson['url1']:
                 message += 'Видеочат: ' + lesson['url1'] + '\n'
             else:
-                message += 'Видеочат: ' + 'https://meet.miem.hse.ru/' + lesson['auditorium'] + '\n'
+                message += 'Видеочат: online\n'
         message += lesson['lecturer'] + '\n\n'
     return message
 
@@ -121,7 +125,6 @@ def check_msg(sender_email, content, sender_id):
 
 def reverse_date(date):
     list_date = list(map(str, date.split('.')))
-    print(list_date)
     if len(list_date[0]) == 1:
         list_date[0] = '0' + list_date[0]
     res_date = '.'.join(list_date[::-1])

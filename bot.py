@@ -76,8 +76,6 @@ class BotHandler(object):
 
     def get_msg(self, msg):
         if msg["sender_email"] != "hse-bot@chat.miem.hse.ru":
-            for i in msg.keys():
-                print(i, ':', msg[i])
             self.check_msg(msg)
 
     def send_msg(self, msg, content):
@@ -95,10 +93,9 @@ class BotHandler(object):
                 "topic": msg["subject"],
                 "content": content
             }
-            print(request)
             self.client.send_message(request)
 
-    def send_private_msg(self, email, content):
+    def send_private_msg(self, email='', content=''):
         request = {
             "type": "private",
             "to": email,
@@ -125,6 +122,7 @@ class BotHandler(object):
                                    "Чтобы узнать какие у меня есть команды, напиши 'Помощь'")
 
 
-# Bot = BotHandler()
-# Bot.client.call_on_each_message(Bot.get_msg)
-# handler_class = BotHandler
+if __name__ == '__main__':
+    Bot = BotHandler()
+    Bot.client.call_on_each_message(Bot.get_msg)
+    handler_class = BotHandler
