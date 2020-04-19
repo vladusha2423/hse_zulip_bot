@@ -1,4 +1,6 @@
 #!flask/bin/python
+import sys
+sys.path.insert(1, 'venv/Lib/site-packages')
 from flask import Flask, request
 import bot
 
@@ -6,12 +8,12 @@ app = Flask(__name__)
 # Bot = bot.BotHandler()
 
 
-@app.route('/record', methods=['POST'])
+@app.route('/api/send-msg', methods=['POST'])
 def index():
     data = request.get_json() or {}
     print(data)
-    if 'email' in data and 'link' in data:
-        bot.BotHandler().send_private_msg(email=data['email'], content=data['link'])
+    if 'email' in data and 'msg' in data:
+        bot.BotHandler().send_private_msg(email=data['email'], content=data['msg'])
         return 'OK'
     else:
         return 'please send both email and link'
