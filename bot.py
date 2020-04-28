@@ -50,7 +50,9 @@ HELP_NVR_MESSAGE = '''
 
 Чтобы получить список доступных аудиторий, введите команду "Список аудиторий"
 
-Чтобы получить непосредственно
+Чтобы запросить видеозапись занятия, отправьте сообщение с номером аудитории, датой, временем начала и окончания записи, 
+а также названием будущей видеозаписи в таком формате: "запись room_name dd.MM.yyyy hh:mm-hh:mm event_name". Например,
+"запись 504 11.09.2020 9:00-10:20 лекция"
 '''
 
 
@@ -91,16 +93,22 @@ class BotHandler(object):
         words = msg["content"].lower().split()
         if (msg["type"] == 'private' or '@**Service Bot**' in msg["content"]) \
                 and msg['sender_full_name'] != 'Service Bot':
-            if "расписание" in words:
+            if "помощь" in words:
+                if "расписание" in words:
+                    self.send_msg(msg, HELP_RUZ_MESSAGE)
+                elif "запись" in words:
+                    self.send_msg(msg, HELP_NVR_MESSAGE)
+            elif "расписание" in words:
                 self.send_msg(msg,
                               timetable.check_msg(msg["sender_email"], msg["content"], msg["sender_id"]))
             elif "привет" in words:
                 self.send_msg(msg, HELLO_MESSAGE)
-            elif "помощь" in words:
-                self.send_msg(msg, HELP_RUZ_MESSAGE)
             elif "запись" in words:
                 self.send_msg(msg,
                               record.check_msg(msg["sender_email"], msg["content"]))
+            elif "список" in words and "аудиторий" in words:
+                rooms = ', '.join(record.get_rooms())
+                self.send_msg(msg, 'Доступные аудитории:\n' + rooms)
             else:
                 self.send_msg(msg, "Не знаю что и ответить :(. \n"
                                    "Чтобы узнать какие у меня есть команды, напиши 'Помощь'")
