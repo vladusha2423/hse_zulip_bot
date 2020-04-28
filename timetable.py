@@ -15,17 +15,6 @@ DaysOfWeek = {
 }
 
 
-# def check_csv(tid):
-#     with open('teacher_id.csv', "r") as file:
-#         reader = csv.reader(file)
-#         for row in reader:
-#             print(row)
-#             for r in row:
-#                 if tid == int(r):
-#                     return 'hse.ru'
-#     return 'edu.hse.ru'
-
-
 def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
     if other_email != '':
         if date_start != '' and date_end != '':
@@ -108,19 +97,6 @@ def check_msg(sender_email, content, sender_id):
                                        other_email=words[words.index('для') + 1])
                 else:
                     return get_lessons(sender_email, sender_id=sender_id)
-    elif "преподаватель" in words:
-        with open('teacher_id.csv', "r") as file:
-            reader = csv.reader(file)
-            ids = []
-            for r in reader:
-                ids = r
-            print(ids)
-            with open('teacher_id.csv', "w", newline='') as csv_file:
-                writer = csv.writer(csv_file, delimiter=',')
-                ids.append(str(sender_id))
-                print(ids)
-                writer.writerow(ids)
-        return 'Готово! Теперь я, наверное, смогу показать ваше расписание))'
 
 
 def reverse_date(date):

@@ -2,6 +2,7 @@ import sys
 sys.path.insert(1, 'venv/Lib/site-packages')
 import zulip
 import timetable
+import record
 
 
 BOT_MAIL = "hse-bot@chat.miem.hse.ru"
@@ -100,13 +101,13 @@ class BotHandler(object):
             if "расписание" in words:
                 self.send_msg(msg,
                               timetable.check_msg(msg["sender_email"], msg["content"], msg["sender_id"]))
-            elif "преподаватель" in words:
-                self.send_msg(msg,
-                              timetable.check_msg(msg["sender_email"], msg["content"], msg["sender_id"]))
             elif "привет" in words:
                 self.send_msg(msg, HELLO_MESSAGE)
             elif "помощь" in words:
                 self.send_msg(msg, HELP_MESSAGE)
+            elif "запись" in words:
+                self.send_msg(msg,
+                              record.check_msg(msg["sender_email"], msg["content"]))
             else:
                 self.send_msg(msg, "Не знаю что и ответить :(. \n"
                                    "Чтобы узнать какие у меня есть команды, напиши 'Помощь'")
