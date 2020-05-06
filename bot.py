@@ -98,6 +98,8 @@ class BotHandler(object):
                     self.send_msg(msg, HELP_RUZ_MESSAGE)
                 elif "запись" in words:
                     self.send_msg(msg, HELP_NVR_MESSAGE)
+                else:
+                    self.send_msg(msg, HELLO_MESSAGE)
             elif "расписание" in words:
                 self.send_msg(msg,
                               timetable.check_msg(msg["sender_email"], msg["content"], msg["sender_id"]))
