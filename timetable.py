@@ -16,6 +16,8 @@ DaysOfWeek = {
 
 
 def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
+    if other_email == '404':
+        return 'Таких пользователей несколько. Попробуйте вместо упоминания использовать почту человека.'
     if other_email != '':
         if date_start != '' and date_end != '':
             response = ruz.person_lessons(other_email, date_start, date_end)
@@ -29,11 +31,11 @@ def get_lessons(email, date_start='', date_end='', sender_id=0, other_email=''):
             else:
                 response = ruz.person_lessons(checked_user)
         else:
-            return 'В базе отсутствует пользователь с такой почтой('
+            return 'В базе отсутствует такой пользователь('
     message = ''
     curr_date = ''
     if not response:
-        return 'Запрос ничего не выдал. Тут два варианта: каникулы или лег руз :)'
+        return 'Запрос ничего не выдал(. Перепроверьте ваше сообщение. Если все в порядке, то есть два варианта: каникулы или лег руз:)'
     for lesson in response:
         if curr_date != lesson['date']:
             message += DaysOfWeek[lesson['dayOfWeekString']] + ':: ' + lesson['date'] + '\n'
@@ -59,6 +61,9 @@ def check_msg(sender_email, content, sender_id):
         if 'сегодня' in words:
             today = datetime.datetime.now().date().isoformat().replace('-', '.')
             if 'для' in words:
+                if '@**' in words[words.index('для') + 1]:
+                    return get_lessons(sender_email, date_start=today, date_end=today, sender_id=sender_id,
+                                       other_email=check_user.check_by_name(remove_dog(words[words.index('для') + 1] + ' ' + words[words.index('для') + 2])))
                 return get_lessons(sender_email, date_start=today, date_end=today, sender_id=sender_id,
                                    other_email=words[words.index('для') + 1])
             else:
@@ -66,6 +71,9 @@ def check_msg(sender_email, content, sender_id):
         elif 'завтра' in words:
             tomorrow = (datetime.datetime.now() + datetime.timedelta(1)).date().isoformat().replace('-', '.')
             if 'для' in words:
+                if '@**' in words[words.index('для') + 1]:
+                    return get_lessons(sender_email, date_start=tomorrow, date_end=tomorrow, sender_id=sender_id,
+                                       other_email=check_user.check_by_name(remove_dog(words[words.index('для') + 1] + ' ' + words[words.index('для') + 2])))
                 return get_lessons(sender_email, date_start=tomorrow, date_end=tomorrow, sender_id=sender_id,
                                    other_email=words[words.index('для') + 1])
             else:
@@ -77,6 +85,10 @@ def check_msg(sender_email, content, sender_id):
                 date_end = re.search(r'\d\d.\d\d.\d{4}', content[start + 10:])
                 if date_end:
                     if 'для' in words:
+                        if '@**' in words[words.index('для') + 1]:
+                            return get_lessons(sender_email, date_start=reverse_date(date.group()),
+                                               date_end=reverse_date(date_end.group()), sender_id=sender_id,
+                                               other_email=check_user.check_by_name(remove_dog(words[words.index('для') + 1] + ' ' + words[words.index('для') + 2])))
                         return get_lessons(sender_email, date_start=reverse_date(date.group()),
                                            date_end=reverse_date(date_end.group()), sender_id=sender_id,
                                            other_email=words[words.index('для') + 1])
@@ -85,6 +97,10 @@ def check_msg(sender_email, content, sender_id):
                                            date_end=reverse_date(date_end.group()), sender_id=sender_id)
                 else:
                     if 'для' in words:
+                        if '@**' in words[words.index('для') + 1]:
+                            return get_lessons(sender_email, date_start=reverse_date(date.group()),
+                                               date_end=reverse_date(date.group()), sender_id=sender_id,
+                                               other_email=check_user.check_by_name(remove_dog(words[words.index('для') + 1] + ' ' + words[words.index('для') + 2])))
                         return get_lessons(sender_email, date_start=reverse_date(date.group()),
                                            date_end=reverse_date(date.group()), sender_id=sender_id,
                                            other_email=words[words.index('для') + 1])
@@ -93,6 +109,10 @@ def check_msg(sender_email, content, sender_id):
                                            date_end=reverse_date(date.group()), sender_id=sender_id)
             else:
                 if 'для' in words:
+                    if '@**' in words[words.index('для') + 1]:
+                        return get_lessons(sender_email, sender_id=sender_id,
+                                           other_email=check_user.check_by_name(
+                                               remove_dog(words[words.index('для') + 1] + ' ' + words[words.index('для') + 2])))
                     return get_lessons(sender_email, sender_id=sender_id,
                                        other_email=words[words.index('для') + 1])
                 else:
@@ -105,3 +125,8 @@ def reverse_date(date):
         list_date[0] = '0' + list_date[0]
     res_date = '.'.join(list_date[::-1])
     return res_date
+
+
+def remove_dog(name):
+    print(name)
+    return name.replace('**', '').replace('@', '')

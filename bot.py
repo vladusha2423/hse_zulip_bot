@@ -62,6 +62,8 @@ class BotHandler(object):
 
     def get_msg(self, msg):
         if msg["sender_email"] != "hse-bot@chat.miem.hse.ru":
+            for i in msg:
+                print(i, ': ', msg[i])
             self.check_msg(msg)
 
     def send_msg(self, msg, content):
