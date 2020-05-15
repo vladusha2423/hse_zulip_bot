@@ -15,7 +15,6 @@ def montage_event(room, start_time, end_time, date, event_name, email):
                 "user_email": email
             }
     )
-    print(response)
     return response.status_code == 200 or response.status_code == 201
 
 
@@ -24,7 +23,6 @@ def get_rooms():
         'https://nvr.miem.hse.ru/api/rooms',
         headers={'key': '49433faafad24c4c8944564cb076eadb'},
     )
-    print(response.json())
     return [r["name"] for r in response.json()]
 
 

@@ -37,15 +37,11 @@ def check(mail_miem):
     service = build('admin', 'directory_v1', credentials=creds)
 
     # Call the Admin SDK Directory API
-    print('Getting the first 10 users in the domain')
     results = service.users().list(customer='my_customer', maxResults=1,
                                 orderBy='email', query='email:' + mail_miem).execute()
 
     users = results.get('users', [])
-    for i in users[0]:
-        print('////////', i, ':', users[0][i])
     if not users:
-        print('No users in the domain.')
         return ''
     else:
         if 'Образовательные программы' in users[0]['orgUnitPath']:
@@ -80,18 +76,13 @@ def check_by_name(name_miem):
     service = build('admin', 'directory_v1', credentials=creds)
 
     # Call the Admin SDK Directory API
-    print('Getting the first 10 users in the domain')
     results = service.users().list(customer='my_customer', maxResults=1,
                                 orderBy='email', query='name:' + name_miem).execute()
 
     users = results.get('users', [])
-    for i in users[0]:
-        print('////////', i, ':', users[0][i])
     if not users:
-        print('No users in the domain.')
         return ''
     elif len(users) == 1:
-        print(users)
         if 'Образовательные программы' in users[0]['orgUnitPath']:
             return users[0]['emails'][0]['address'].replace('@miem', '@edu')
         return users[0]['emails'][0]['address'].replace('@miem.', '@')

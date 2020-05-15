@@ -11,12 +11,12 @@ app = Flask(__name__)
 @app.route('/api/send-msg', methods=['POST'])
 def index():
     data = request.get_json() or {}
-    print(data)
     if 'email' in data and 'msg' in data:
         bot.BotHandler().send_private_msg(email=data['email'], content=data['msg'])
         return 'OK'
     else:
         return 'please send both email and link'
+
 
 if __name__ == '__main__':
     app.run(debug=True)
