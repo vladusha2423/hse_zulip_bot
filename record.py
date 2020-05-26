@@ -3,17 +3,20 @@ import re
 
 
 def montage_event(room, start_time, end_time, date, event_name, email):
+    json = {
+        "start_time": start_time,
+        "end_time": end_time,
+        "date": reverse_date(date),
+        "event_name": event_name,
+        "user_email": email
+    }
+    print(room)
+    print(json)
     response = requests.post(
         'https://nvr.miem.hse.ru/api/montage-event/' + room,
         headers={"key": "49433faafad24c4c8944564cb076eadb", "content-type": "application/json"},
         params={'q': 'requests+language:python'},
-        json={
-                "start_time": start_time,
-                "end_time": end_time,
-                "date": reverse_date(date),
-                "event_name": event_name,
-                "user_email": email
-            }
+        json=json
     )
     return response.status_code == 200 or response.status_code == 201
 
@@ -27,12 +30,15 @@ def get_rooms():
 
 
 def check_msg(sender_email, content):
-    words = content.lower().split()
+    words = content.split()
     if len(words) > 3:
         date = re.search(r'([1-9]|0[1-9]|[12][0-9]|3[01])[- /.]([1-9]|0[1-9]|1[012])[- /.](19|20)\d\d$', words[2])
         time = re.search(r'^(\d|[01]\d|2[0-3])(:[0-5]\d)[-](\d|[01]\d|2[0-3])(:[0-5]\d)$', words[3])
 
-        if words[1] in get_rooms():
+        rooms = [item.lower() for item in get_rooms()]
+        print(rooms)
+
+        if words[1].lower() in rooms:
             if date:
                 if time:
                     times = time.group().split('-')
@@ -41,7 +47,7 @@ def check_msg(sender_email, content):
                             times[0],
                             times[1],
                             date.group(),
-                            words[4] if len(words) >= 4 else '',
+                            words[4] if len(words) > 4 else '',
                             sender_email
                     ):
                         return 'Запрос на склейку отправлен, когда всё будет готово я сообщу'
